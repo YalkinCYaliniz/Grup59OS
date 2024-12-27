@@ -12,17 +12,6 @@ Bu proje, işletim sistemleri dersi kapsamında geliştirilen bir basit **kabuk 
 - **Özel Sinyal İşleme:** SIGCHLD gibi sinyalleri yakalar ve yönetir.
 - **Program Sonlandırma:** Arka planda çalışan işlemleri bekleyip temiz bir şekilde sonlandırır.
 
-## Dosya Yapısı
-Proje aşağıdaki dosya ve klasörlerden oluşmaktadır:
-
-├── shell.c # Kabuk uygulamasının ana kaynağı 
-├── shell.h # Kabuk için prototip ve tanımlar 
-├── main.c # Ana fonksiyon (programın giriş noktası) 
-├── increment.c # "increment" programının kaynak dosyası 
-├── increment # "increment" programının çalıştırılabilir hali 
-├── increment.h # "increment" programı için başlık dosyası 
-├── Makefile # Derleme talimatlarını içeren dosya 
-├── README.md # Proje hakkında bilgi (bu dosya)
 ### Dosya Açıklamaları
 - **shell.c ve shell.h:**
   - Kabuk uygulamasının ana işlevlerini içerir.
