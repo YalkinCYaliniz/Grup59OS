@@ -72,6 +72,17 @@ void boruCalistir(char **parcalar, int parcaSayisi, int arkaPlanda);
  */
 char** boruIleBol(char *komut, int *parcaSayisi);
 
+/*
+ * Arka plandaki işlemleri sürekli kontrol eden ve tamamlandıklarında bildiren fonksiyon
+ */
+void arkaPlanIslemleriniKontrolEt();
+
+/* 
+ * SIGCHLD sinyali geldiğinde çağrılacak handler fonksiyonu 
+ * Arka plandaki süreçlerin tamamlanmasını yakalar ve durumlarını bildirir.
+ */
+void arkaPlanBitisHandler();
+
 
 
 

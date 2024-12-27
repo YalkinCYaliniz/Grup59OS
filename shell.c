@@ -344,3 +344,43 @@ char** boruIleBol(char *komut, int *parcaSayisi) {
     *parcaSayisi = index;
     return parcalar;
 }
+/* ----------------------------------------------------------------------------
+ * Arka plan işlemleri sürekli kontrol edilsin ve biten varsa bildirim yapılsın.
+ * (sleep 5 & gibi komutların tam 5 saniye sonrasında "bitti" bildirimi vermesi)
+ * ----------------------------------------------------------------------------*/
+void arkaPlanIslemleriniKontrolEt() {
+    for(int i = 0; i < arkaPlanIslemSayisi; i++) {
+        if(arkaPlanPIDler[i] > 0) { // Eğer arka planda bir işlem varsa
+            int status;
+            pid_t sonuc = waitpid(arkaPlanPIDler[i], &status, WNOHANG); // İşlemi kontrol et
+            if(sonuc == arkaPlanPIDler[i]) { // İşlem tamamlandıysa
+                int exitCode = WEXITSTATUS(status); // Çıkış kodunu al
+                printf("[%d] retval: %d\n", arkaPlanPIDler[i], exitCode); // Kullanıcıya bildir
+                fflush(stdout);
+                arkaPlanPIDler[i] = 0; // PID'yi sıfırla (işlem tamamlandı)
+            }
+        }
+    }
+}
+/* ----------------------------------------------------------------------------
+ * SIGCHLD sinyali geldiğinde çağrılacak handler
+ * Arka plandaki süreçlerin tamamlanmasını yakalar ve durumlarını bildirir.
+ * ----------------------------------------------------------------------------*/
+void arkaPlanBitisHandler() {
+    // quit ve pipe aktifse, handler retval basmasın
+    if (pipeAktif || quitAktif) {
+        return;
+    }
+    int status;
+    pid_t pid;
+    // Birden fazla child bitmiş olabilir
+    while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
+        int exitcode = WEXITSTATUS(status);
+        printf("[%d] retval: %d\n", pid, exitcode);
+        fflush(stdout);
+        printf("> ");
+        fflush(stdout);
+
+    }
+}
+
