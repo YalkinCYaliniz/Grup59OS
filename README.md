@@ -98,3 +98,12 @@ Kabuk sonlandiriliyor...
 
 ## Kullanım
 Kabuk çalıştırıldığında > ile başlayan bir komut satırı sunar. Kullanıcı bu satıra komut yazarak işlemleri gerçekleştirebilir.
+
+## Katkıda Bulunanlar
+
+    Grup üyeleri:
+    - B221210101 Yalkin Can Yaliniz
+    - B221210062 Mehmet Horuz
+    - B211210056 Ismail Furkan Bilen
+    - G221210043 Kadir Erim
+    - G221210017 Sehrisu Ustuner 
