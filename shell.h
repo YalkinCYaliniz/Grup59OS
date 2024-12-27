@@ -57,6 +57,10 @@ void komutYorumla(char *komutSatiri);
  * Giriş yönlendirme yapan fonksiyon
  */
 int girisYonlendirme(char **kelimeler);
+/*
+ * Çıkış yönlendirme yapan fonksiyon
+ */
+int cikisYonlendirme(char **kelimeler);
 
 /*
  * Birden fazla komutu pipe ile bağlayarak çalıştıran fonksiyon

@@ -220,6 +220,38 @@ int girisYonlendirme(char **kelimeler) {
     }
     return 0;
 }
+/* ----------------------------------------------------------------------------
+ * Çıkış yönlendirme (komut > dosya)
+ * Komut içinde '>' operatörü kullanılarak dosya çıktısı yapılır.
+ * ----------------------------------------------------------------------------*/
+int cikisYonlendirme(char **kelimeler) {
+    int i = 0;
+    while(kelimeler[i] != NULL) {
+        if(strcmp(kelimeler[i], ">") == 0) { // '>' operatörü bulunursa
+            if(kelimeler[i+1] == NULL) {
+                fprintf(stderr, "Cikis dosyasi belirtilmemis.\n");
+                return -1;
+            }
+            int fd = open(kelimeler[i+1], O_WRONLY | O_CREAT | O_TRUNC, 0644);// Dosyayı yazma, oluşturma ve üzerine yazma modunda aç
+            if(fd < 0) {
+                perror("Dosya acilamadi");
+                return -1;
+            }
+            dup2(fd, STDOUT_FILENO);
+            close(fd);
+
+            // "> dosya" kelimelerini diziden çıkaralım
+            while(kelimeler[i+2] != NULL) {
+                kelimeler[i] = kelimeler[i+2];
+                i++;
+            }
+            kelimeler[i] = NULL;
+            break;
+        }
+        i++;
+    }
+    return 0;
+}
 
 /* ----------------------------------------------------------------------------
  * Birden fazla komutu pipe ile bağlama
