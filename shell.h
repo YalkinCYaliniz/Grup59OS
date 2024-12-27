@@ -84,6 +84,16 @@ void arkaPlanIslemleriniKontrolEt();
 void arkaPlanBitisHandler();
 
 
+/*
+ * Programı sonlandıran fonksiyon
+ * Arka plandaki tüm süreçleri bekler ve çıkış yapar.
+ */
+void programiSonlandir();
+
+/*
+ * Kabuk uygulamasını başlatan fonksiyon
+ */
+void kabukCalistir(void);
 
 
 

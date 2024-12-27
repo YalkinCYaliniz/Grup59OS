@@ -383,4 +383,78 @@ void arkaPlanBitisHandler() {
 
     }
 }
+/* ----------------------------------------------------------------------------
+ * Programı sonlandır (quit komutu)
+ * Arka planda çalışanlar varsa bekle, sonra çık.
+ * ----------------------------------------------------------------------------*/
+void programiSonlandir() {
+// quit aktif edilsin
+    quitAktif = 1;
+    // Arka planda çalışan tüm süreçleri sırayla bekle
+    for (int i = 0; i < arkaPlanIslemSayisi; i++) {// Eğer arka planda bir işlem varsa
+        if (arkaPlanPIDler[i] > 0) {
+            int status;
+            waitpid(arkaPlanPIDler[i], &status, 0);  // Bloklayarak bekle
+            int exitCode = WEXITSTATUS(status);      // Çıkış kodunu al
+            printf("[%d] retval: %d\n", arkaPlanPIDler[i], exitCode);
+            fflush(stdout);
+        }
+    }
+    printf("Kabuk sonlandiriliyor...\n");
+    exit(0);
+}
+
+
+
+
+
+
+
+/* ----------------------------------------------------------------------------
+ * Kabuk uygulamasını başlatan fonksiyon
+ * Komut döngüsü içerir ve kullanıcıdan komut alır.
+ * ----------------------------------------------------------------------------*/
+void kabukCalistir(void) {
+    // SIGCHLD sinyalini handler'a bağlayalım (arka plan bitişini anında yakalamak için)
+    signal(SIGCHLD, arkaPlanBitisHandler);
+
+    while (1) {
+        char girdiSatiri[MAX_GIRIS_UZUNLUK];
+
+        // Prompt yaz
+        promptYaz();
+
+        // Kullanıcıdan giriş al (Ctrl+D gelirse NULL döner)
+        if (fgets(girdiSatiri, MAX_GIRIS_UZUNLUK, stdin) == NULL) {
+            printf("\n");
+            break;
+        }
+
+        // Noktalı virgül (;) ile ayrılmış komutlar olabilir
+        int komutSayisi = 0;
+        char **komutListesi = noktaliVirgulIleBol(girdiSatiri, &komutSayisi);
+
+        for (int i = 0; i < komutSayisi; i++) {
+            char *temizKomut = bosluklariTemizle(komutListesi[i]);
+            if (strlen(temizKomut) > 0) {
+                komutYorumla(temizKomut);
+            }
+        }
+
+        // Bellek temizliği
+        for (int i = 0; i < komutSayisi; i++) {
+            free(komutListesi[i]);
+        }
+        free(komutListesi);
+    }
+
+    // Kabuktan çıkarken arka planda çalışan süreçleri de bekleyelim
+    for (int i = 0; i < arkaPlanIslemSayisi; i++) {
+        if (arkaPlanPIDler[i] > 0) {
+            waitpid(arkaPlanPIDler[i], NULL, 0);
+        }
+    }
+
+    printf("Kabuk sonlandiriliyor...\n");
+}
 
