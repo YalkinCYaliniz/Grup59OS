@@ -41,7 +41,7 @@ Proje aşağıdaki dosya ve klasörlerden oluşmaktadır:
 ### 1. Temel Komut İşleme
 Kullanıcıdan bir komut alır ve çalıştırır. Örneğin:
 
-bash
+
 > ls -l
 
 
@@ -49,7 +49,7 @@ bash
 ### 2. Giriş ve Çıkış Yönlendirme
 Bir komutun girişini veya çıktısını dosyalara yönlendirme yeteneği sağlar. Örneğin:
 
-bash
+
 > cat < file.txt
 file.txt’nin içinde ne varsa ekrana yazdırılır.
 > cat < nofile.txt
@@ -63,12 +63,12 @@ Bu komut, file1.txt dosyasının içeriğini file2.txt dosyasına yazar.
 ### 3. Boru (Pipe) Desteği
 Boru operatörü | kullanılarak birden fazla komutun çıktısını birbirine bağlama desteği sunar. Örneğin:
 
-bash
+
 > echo 12 | increment | grep 13
 
 
 Bu komut, echo çıktısını increment ile işler ve ardından grep ile filtreler.
-bash
+
 >find /etc | grep ssh | grep conf
 
 Bu görevde, komut promptu görüntülenmeden önce, pipe içindeki tüm komutların sonlanması gerektir.
@@ -77,7 +77,6 @@ Bu görevde, komut promptu görüntülenmeden önce, pipe içindeki tüm komutla
 ### 4. Arka Plan İşlemleri
 Bir komut sonuna & eklenerek arka planda çalıştırılabilir. Arka plandaki işlemler tamamlandığında kullanıcı bilgilendirilir. Örneğin:
 
-bash
 > sleep 5 &
 > cat file.txt
 file.txt’nin içindekiler ekrana yazdırılır.
@@ -88,10 +87,10 @@ sonra yazdırılır.
 ### 5. Çoklu Komut İşleme
 Noktalı virgül (;) kullanılarak birden fazla komut ardışık olarak çalıştırılabilir. Örneğin:
 
-bash
+
 > ls -l; echo "Bitti!"
 
-bash
+
 > echo 12; sleep 2; echo 13
 12
 13
@@ -103,7 +102,7 @@ komut ilk önce 12 yazdirir, 2 saniye uyuyacak ve sonra 13 yazdirir.
 ### 6. Çıkış Komutu
 quit komutu ile kabuk sonlandırılır. Kabuk sonlanmadan önce arka planda çalışan tüm işlemler tamamlanır ve kullanıcı bilgilendirilir:
 
-bash
+
 > quit
 Kabuk sonlandiriliyor...
 
