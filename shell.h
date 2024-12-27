@@ -58,6 +58,16 @@ void komutYorumla(char *komutSatiri);
  */
 int girisYonlendirme(char **kelimeler);
 
+/*
+ * Birden fazla komutu pipe ile bağlayarak çalıştıran fonksiyon
+ */
+void boruCalistir(char **parcalar, int parcaSayisi, int arkaPlanda);
+
+/*
+ * Pipe (|) ile ayrılmış komutları parçalara ayıran fonksiyon
+ */
+char** boruIleBol(char *komut, int *parcaSayisi);
+
 
 
 

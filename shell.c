@@ -220,3 +220,95 @@ int girisYonlendirme(char **kelimeler) {
     }
     return 0;
 }
+
+/* ----------------------------------------------------------------------------
+ * Birden fazla komutu pipe ile bağlama
+ * "echo 12 | increment | grep 13" gibi
+ * ----------------------------------------------------------------------------*/
+void boruCalistir(char **parcalar, int parcaSayisi, int arkaPlanda) {
+    int girisFD = 0; // İlk komutun girişi (stdin)
+    int fd[2];
+    pid_t sonPid = 0;
+    pipeAktif = 1;
+
+    for(int i = 0; i < parcaSayisi; i++) {
+        if(pipe(fd) < 0) {
+            perror("pipe hata");
+            return;
+        }
+
+        pid_t pid = fork(); // Yeni süreç oluştur
+        if(pid < 0) {
+            perror("fork hata");
+            return;
+        }
+        else if(pid == 0) {  
+            // Çocuk
+            // Okuma ucunu standart girdi olarak ayarla
+            dup2(girisFD, STDIN_FILENO);
+
+            // Son komut değilse, çıktıyı pipe'ın yazma ucuna yönlendir
+            if(i < parcaSayisi - 1) {
+                dup2(fd[1], STDOUT_FILENO);
+            }
+            // Gereksiz dosya tanıtıcılarını kapat
+
+            close(fd[0]);
+            close(fd[1]);
+
+            // Komutu boşluklara bölelim
+            char *parcaTemiz = bosluklariTemizle(parcalar[i]);
+            char **kelimeler = kelimelereBol(parcaTemiz);
+
+            // Giriş / Çıkış yönlendirmesi
+            girisYonlendirme(kelimeler);
+            cikisYonlendirme(kelimeler);
+
+            // Komutu çalıştır
+            execvp(kelimeler[0], kelimeler);
+            perror("execvp hata");
+            exit(EXIT_FAILURE);
+        }
+        else {
+            // Ebeveyn
+            if(arkaPlanda) {
+                // Arka planda
+                arkaPlanPIDler[arkaPlanIslemSayisi++] = pid;
+            }
+            else {
+                // Ön planda bekleme, 
+                // ama tüm pipe'lar oluşturulduktan sonra en sonda tam bekleyeceğiz
+                close(fd[1]);// Yazma ucuu kapatt
+            girisFD = fd[0];// Okuma ucunu sonraki işlem için ayarla
+            sonPid = pid;  // Son komutun PID'sini sakla
+            }
+        }
+    }
+
+    // Ön plandaysa, tüm child'ların bitmesini bekleyelim
+    if(!arkaPlanda) {
+        for(int i = 0; i < parcaSayisi; i++) {
+            wait(NULL); // Tüm child süreçlerini bekle
+        }
+    }
+    pipeAktif = 0;
+}
+/* ----------------------------------------------------------------------------
+ * Pipe (|) var mı diye bakıp parçalara ayırır.
+ * Örn: "echo 12 | increment | grep 13"
+ * ----------------------------------------------------------------------------*/
+char** boruIleBol(char *komut, int *parcaSayisi) {
+    char **parcalar = malloc(sizeof(char*) * MAX_KELIME_SAYISI);
+    memset(parcalar, 0, sizeof(char*) * MAX_KELIME_SAYISI);
+
+    int index = 0;
+    char *token = strtok(komut, "|"); // Pipe ile böl
+    while (token != NULL) {
+        parcalar[index] = malloc(strlen(token) + 1);
+        strcpy(parcalar[index], token);
+        index++;
+        token = strtok(NULL, "|");
+    }
+    *parcaSayisi = index;
+    return parcalar;
+}
