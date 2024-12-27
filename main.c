@@ -11,6 +11,7 @@ Isletim Sistemleri 2024 Guz Donemi Proje Odevi GRUP 59
 
 int main() {
     // Kabuk uygulamasını başlatalım
+    // konsoldan ./shell ile calisir
     kabukCalistir();
     return 0; 
 }

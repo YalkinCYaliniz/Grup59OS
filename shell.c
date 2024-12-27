@@ -24,6 +24,8 @@ Isletim Sistemleri 2024 Guz Donemi Proje Odevi GRUP 59
 #include <errno.h>      // errno, perror
 #include <signal.h>     // sigaction, kill, SIGCHLD, SIGINT vb.
 #include "shell.h"      // Shell ile ilgili prototipler
+#include <bits/sigaction.h>
+#include <asm-generic/signal-defs.h>
 
 #define MAX_GIRIS_UZUNLUK 1024
 #define MAX_KELIME_SAYISI 100
@@ -359,6 +361,7 @@ void arkaPlanIslemleriniKontrolEt() {
                 fflush(stdout);
                 arkaPlanPIDler[i] = 0; // PID'yi sıfırla (işlem tamamlandı)
             }
+            
         }
     }
 }
@@ -367,27 +370,32 @@ void arkaPlanIslemleriniKontrolEt() {
  * Arka plandaki süreçlerin tamamlanmasını yakalar ve durumlarını bildirir.
  * ----------------------------------------------------------------------------*/
 void arkaPlanBitisHandler() {
-    // quit ve pipe aktifse, handler retval basmasın
-    if (pipeAktif || quitAktif) {
+    
+    // Arka plandaki süreçlerin durumunu kontrol et
+    arkaPlanIslemleriniKontrolEt();
+
+    // Eğer `quit` veya `pipe` aktifse prompt'u yazma
+    if (quitAktif || pipeAktif) {
         return;
     }
+    // Başka işlemler bitmiş olabilir
     int status;
     pid_t pid;
-    // Birden fazla child bitmiş olabilir
     while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
         int exitcode = WEXITSTATUS(status);
         printf("[%d] retval: %d\n", pid, exitcode);
         fflush(stdout);
-        printf("> ");
-        fflush(stdout);
-
     }
+    
+    
 }
+
 /* ----------------------------------------------------------------------------
  * Programı sonlandır (quit komutu)
  * Arka planda çalışanlar varsa bekle, sonra çık.
  * ----------------------------------------------------------------------------*/
 void programiSonlandir() {
+    
 // quit aktif edilsin
     quitAktif = 1;
     // Arka planda çalışan tüm süreçleri sırayla bekle
@@ -415,7 +423,6 @@ void programiSonlandir() {
  * Komut döngüsü içerir ve kullanıcıdan komut alır.
  * ----------------------------------------------------------------------------*/
 void kabukCalistir(void) {
-    // SIGCHLD sinyalini handler'a bağlayalım (arka plan bitişini anında yakalamak için)
     signal(SIGCHLD, arkaPlanBitisHandler);
 
     while (1) {
@@ -424,10 +431,18 @@ void kabukCalistir(void) {
         // Prompt yaz
         promptYaz();
 
-        // Kullanıcıdan giriş al (Ctrl+D gelirse NULL döner)
+    yenidenOku:  // Sinyal kesintisi durumunda buraya dön
         if (fgets(girdiSatiri, MAX_GIRIS_UZUNLUK, stdin) == NULL) {
-            printf("\n");
-            break;
+            if (feof(stdin)) {
+                printf("\n");
+                break;
+            }
+
+            // Eğer sinyal kesintisiyse, tekrar giriş oku
+            if (errno == EINTR) {
+                clearerr(stdin);
+                goto yenidenOku;
+            }
         }
 
         // Noktalı virgül (;) ile ayrılmış komutlar olabilir
@@ -457,4 +472,5 @@ void kabukCalistir(void) {
 
     printf("Kabuk sonlandiriliyor...\n");
 }
+
 
