@@ -15,7 +15,6 @@ Bu proje, işletim sistemleri dersi kapsamında geliştirilen bir basit **kabuk 
 ## Dosya Yapısı
 Proje aşağıdaki dosya ve klasörlerden oluşmaktadır:
 
-<repo-adı>/ 
 ├── shell.c # Kabuk uygulamasının ana kaynağı 
 ├── shell.h # Kabuk için prototip ve tanımlar 
 ├── main.c # Ana fonksiyon (programın giriş noktası) 
