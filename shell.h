@@ -53,6 +53,10 @@ void komutCalistirTekli(char **kelimeler, int arkaPlanda);
  * Herhangi bir komut satırını yorumlayan fonksiyon
  */
 void komutYorumla(char *komutSatiri);
+/*
+ * Giriş yönlendirme yapan fonksiyon
+ */
+int girisYonlendirme(char **kelimeler);
 
 
 

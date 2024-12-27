@@ -187,3 +187,36 @@ void komutYorumla(char *komutSatiri) {
     }
     free(parcalar);// Parçalar dizisini serbest bırak
 }
+
+/* ----------------------------------------------------------------------------
+ * Giriş yönlendirme (komut < dosya)
+ * Komut içinde '<' operatörü kullanılarak dosya girdisi yapılır.
+ * ----------------------------------------------------------------------------*/
+int girisYonlendirme(char **kelimeler) {
+    int i = 0;
+    while(kelimeler[i] != NULL) {
+        if(strcmp(kelimeler[i], "<") == 0) { // '<' operatörü bulunursa
+            if(kelimeler[i+1] == NULL) { // Dosya adı belirtilmemişse hata
+                fprintf(stderr, "Giris dosyasi belirtilmemis.\n");
+                return -1;
+            }
+            int fd = open(kelimeler[i+1], O_RDONLY); // Dosyayı oku modunda aç
+            if(fd < 0) { // Dosya açılamadıysa hata mesajı
+                fprintf(stderr, "%s giris dosyasi bulunamadi.\n", kelimeler[i+1]);
+                return -1;
+            }
+            dup2(fd, STDIN_FILENO); // Dosya deskriptörünü standart girdi olarak ayarla
+            close(fd); //  deskriptörünü kapatt
+
+            // "< dosya" kelimelerini diziden çıkaralım
+            while(kelimeler[i+2] != NULL) {
+                kelimeler[i] = kelimeler[i+2];
+                i++;
+            }
+            kelimeler[i] = NULL; // Diziyi sonlandır
+            break;
+        }
+        i++;
+    }
+    return 0;
+}
