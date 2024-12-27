@@ -262,7 +262,6 @@ int cikisYonlendirme(char **kelimeler) {
 void boruCalistir(char **parcalar, int parcaSayisi, int arkaPlanda) {
     int girisFD = 0; // İlk komutun girişi (stdin)
     int fd[2];
-    pid_t sonPid = 0;
     pipeAktif = 1;
 
     for(int i = 0; i < parcaSayisi; i++) {
@@ -314,7 +313,7 @@ void boruCalistir(char **parcalar, int parcaSayisi, int arkaPlanda) {
                 // ama tüm pipe'lar oluşturulduktan sonra en sonda tam bekleyeceğiz
                 close(fd[1]);// Yazma ucuu kapatt
             girisFD = fd[0];// Okuma ucunu sonraki işlem için ayarla
-            sonPid = pid;  // Son komutun PID'sini sakla
+            
             }
         }
     }
